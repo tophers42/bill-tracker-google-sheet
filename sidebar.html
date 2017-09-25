@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div class="sidebar">
+      <form>
+      <div>
+        <label for="bill-id">Bill id: </label>
+        <input type="text" id="bill-id">
+      </div>
+      <button id="refresh-bill-button">Refresh bill</button>
+      </form>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+      /**
+       * On document load, assign click handlers to each button and try to load the
+       * user's origin and destination language preferences if previously set.
+       */
+      $(function() {
+        $('#refresh-bill-button').click(refreshBill);
+      });
+
+      function refreshBill() {
+        this.disabled = true;
+        $('#response').remove();
+        var billId = $('#bill-id').val();
+        google.script.run
+            .withSuccessHandler(
+              function(msg, element) {
+                showResponse(msg, element);
+                element.disabled = false;
+              })
+            .withFailureHandler(
+              function(msg, element) {
+                showResponse(msg, element);
+                element.disabled = false;
+              })
+            .withUserObject(this)
+            .refreshSpecificBill(billId);
+      }
+
+
+      /**
+       * Inserts a div that contains an error message after a given element.
+       *
+       * @param msg The error message to display.
+       * @param element The element after which to display the error.
+       */
+      function showResponse(msg, element) {
+        var div = $('<div id="response" class="response">' + msg + '</div>');
+        $(element).before(div);
+      }
+    </script>
+  </body>
+</html>
